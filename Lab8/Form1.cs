@@ -1088,7 +1088,6 @@ namespace Lab8
         }
 
         TreeViews tree = new TreeViews();
-        int figure_now = 1; // Какая фигура выбрана	
         public interface IObservable
         {   // Наблюдаемый объект
             void AddObserver(IObserver o);

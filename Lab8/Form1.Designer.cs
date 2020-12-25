@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Узел0");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Фигуры:");
             this.paint_box = new System.Windows.Forms.Panel();
             this.label_x = new System.Windows.Forms.Label();
             this.label_y = new System.Windows.Forms.Label();
@@ -276,10 +276,10 @@
             // 
             this.treeView1.Location = new System.Drawing.Point(794, 12);
             this.treeView1.Name = "treeView1";
-            treeNode3.Name = "Узел0";
-            treeNode3.Text = "Узел0";
+            treeNode1.Name = "Узел0";
+            treeNode1.Text = "Фигуры:";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3});
+            treeNode1});
             this.treeView1.Size = new System.Drawing.Size(166, 580);
             this.treeView1.TabIndex = 14;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
