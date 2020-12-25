@@ -20,7 +20,7 @@ namespace Lab8
         }
         public class Figure
         {
-            public int x, y;
+            public int x, y,rad,lenght,size;
             public bool is_drawed = true;
             public Color fillcolor = Color.Aqua;
             public Color color = Color.Black;
@@ -59,7 +59,7 @@ namespace Lab8
             public int maxcount = 10;
             public Figure[] group;
             public int count;
-            int min_x = 99999, max_x = 0, min_y = 99999, max_y = 0;
+            public int min_x = 99999, max_x = 0, min_y = 99999, max_y = 0;
             public Group()
             {   // Выделяем maxcount мест в хранилище
                 count = 0;
@@ -202,10 +202,11 @@ namespace Lab8
     
         class Circle : Figure
         {
-            public int rad = 30; // Радиус круга
             public Circle() { }
-            public Circle(int x, int y)
+            public Circle(int x, int y,int rad)
             {
+                size = rad * 2;
+                this.rad = rad;
                 this.x = x - rad;
                 this.y = y - rad;
             }
@@ -260,6 +261,7 @@ namespace Lab8
             public override void changesize(int size)
             {   // Изменение размера
                 rad += size;
+                this.size = rad * 2;
             }
             public override bool checkfigure(int x, int y)
             {   // Проверка на фигуры
@@ -281,15 +283,13 @@ namespace Lab8
         }
         class Square : Figure
         {
-            public int x2, y2, size = 60;
-
             public Square() { }
             public Square(int x, int y)
             {
+                size = 60;
+                rad = size;
                 this.x = x - size / 2;
                 this.y = y - size / 2;
-                this.x2 = size;
-                this.y2 = size;
             }
 
             ~Square() { }
@@ -365,10 +365,12 @@ namespace Lab8
         }
         class Line : Figure
         {
-            public int lenght = 60, wight = 5;
+            public int wight = 5;
             public Line() { }
             public Line(int x, int y)
             {
+                lenght = 60;
+                size = lenght;
                 this.x = x - lenght / 2;
                 this.y = y;
             }
@@ -607,18 +609,116 @@ namespace Lab8
             }
 
         }
+        class Sticky : IObserver
+        {
+            public Sticky() { }
+            public bool checkCircle(Storage stg, int i, int j)
+            {
+                if ((stg.objects[j].x - stg.objects[i].x) * (stg.objects[j].x - stg.objects[i].x) +
+                    (stg.objects[j].y - stg.objects[i].y) * (stg.objects[j].y - stg.objects[i].y)
+                    <= (stg.objects[i].rad + stg.objects[j].rad) * (stg.objects[i].rad + stg.objects[j].rad) + 1)
+                    return true;
+                else return false;
+            }
+            public bool checkLine(Storage stg, int i, int j)
+            {
+                if (stg.objects[i].x + stg.objects[i].lenght >= stg.objects[j].x - stg.objects[j].lenght
+                    && stg.objects[i].x - stg.objects[i].lenght <= stg.objects[j].x + stg.objects[j].lenght
+                    && stg.objects[i].y >= stg.objects[j].y - 10
+                    && stg.objects[i].y <= stg.objects[j].y + 10)
+                    return true;
+                else return false;
+            }
+            public bool checkSquare(Storage stg, int i, int j)
+            {
+                if (stg.objects[i].x + (stg.objects[i].size / 2) >= stg.objects[j].x - (stg.objects[j].size / 2)
+                    && stg.objects[i].x - (stg.objects[i].size / 2) <= stg.objects[j].x + (stg.objects[j].size / 2)
+                    && stg.objects[i].y >= stg.objects[j].y - (stg.objects[j].size)
+                    && stg.objects[i].y <= stg.objects[j].y + (stg.objects[j].size))
+                    return true;
+                else return false;
+            }
+            public bool FigureCheck(Storage stg, int i, int j, string b, int d)
+            {
+                string h;
+                if (d == 1)
+                {
+                    h = b;
+                }
+                else h = stg.objects[j].name();
+                switch (h)
+                {
+                    case "Circle":
+                        if (checkCircle(stg, i, j))
+                            return true;
+                        break;
+
+                    case "Line":
+                        if (checkLine(stg, i, j))
+                            return true;
+                        break;
+
+                    case "Square":
+                        if (checkSquare(stg, i, j))
+                            return true;
+                        break;
+                    case "Group":
+                        (stg.objects[j] as Group).getsize();
+                        if (stg.objects[i].x <= (stg.objects[j] as Group).max_x && (stg.objects[i].x + (stg.objects[i].rad * 2)) >=
+                        (stg.objects[j] as Group).min_x &&
+                            stg.objects[i].y <= (stg.objects[j] as Group).max_y &&
+                            (stg.objects[i].y + (stg.objects[i].rad * 2)) >= (stg.objects[j] as Group).min_y)
+                            return true;
+                        break;
+                }
+                return false;
+
+            }
+            public void Update(ref TreeView treeView, Storage stg)
+            {
+                int p = 0;
+                for (int i = 0; i < k; ++i)
+                {
+                    if (!stg.check_empty(i))
+                    {
+                        if (stg.objects[i].is_sticky == true)
+                        {
+                            p = i;
+                            break;
+                        }
+                    }
+                }
+                for (int i = 0; i < k; ++i)
+                {
+                    if (!stg.check_empty(i))
+                    {
+                        if (p == i)
+                        {
+                            continue;
+                        }
+                        string f = "";
+                        if (FigureCheck(stg, p, i, f, 0))
+                        {
+                            stg.objects[i].setcolored(Color.White);
+                        }
+                    }
+                }
+            }
+        }
+        
+
         private void paint_box_MouseMove(object sender, MouseEventArgs e)
         {
             label_x.Text = "X: " + e.X.ToString();
             label_y.Text = "Y: " + e.Y.ToString();
         }
-        private void paint_Figure(Color name, ref Storage stg, int index)
+        private void paint_figure(Color name, int index)
         {
-            if (!stg.check_empty(index))
+            if (!storag.check_empty(index))
             {
                 Pen pen = new Pen(name, 3);
-                stg.objects[index].setColor(name);
-                stg.objects[index].paint_figure(pen, paint_box);
+                storag.objects[index].setColor(name);
+                storag.objects[index].paint_figure(pen, paint_box);
             }
         }
         private void remove_selection_circle(ref Storage stg)
@@ -627,7 +727,7 @@ namespace Lab8
             {
                 if (!storag.check_empty(i))
                 {
-                    paint_Figure(Color.Black, ref storag, i);
+                    paint_figure(Color.Black, i);
                 }
             }
         }
@@ -635,11 +735,12 @@ namespace Lab8
         {   // Удаляет выделенные элементы из хранилища
             for (int i = 0; i < k; ++i)
             {
-                if (!storag.check_empty(i))
+                if (!stg.check_empty(i))
                 {
-                    if (storag.objects[i].getColor() == Color.White)
+                    if (stg.objects[i].color == Color.Red)
                     {
-                        storag.delete_object(i);
+                        stg.delete_object(i);
+                        stg.sorting(k);
                     }
                 }
             }
@@ -692,7 +793,7 @@ namespace Lab8
                     {   // Меняем is_drawed на true
                         storag.objects[i].is_drawed = true;
                     }
-                    paint_Figure(Color.Aqua, ref storag, i);
+                    paint_figure(Color.Black, i);
                 }
             }
 
@@ -718,11 +819,11 @@ namespace Lab8
                 {   // Если нажат ctrl, то выделяем несколько объектов
                     if (p == 0)
                     {
-                        paint_Figure(Color.Black, ref storag, indexin);
+                        paint_figure(Color.Black, indexin);
                         p = 1;
                     }
                     // Вызываем функцию отрисовки круга                            
-                    paint_Figure(Color.White, ref storag, c);
+                    paint_figure(Color.White, c);
                 }
                 else
                 {   // Иначе выделяем только один объект
@@ -730,7 +831,7 @@ namespace Lab8
                     remove_selection_circle(ref storag);
                     // Вызываем функцию отрисовки круга                   
                     // Вызываем функцию отрисовки круга                          
-                    paint_Figure(Color.White, ref storag, c);
+                    paint_figure(Color.White, c);
                     tree.treeSelect(ref treeView1, c);
                 }
                 return;
@@ -740,11 +841,11 @@ namespace Lab8
             {
                 if (rb_Circle.Checked == true)
                 {
-                    Figure krug = new Circle(e.X, e.Y);// Добавляем круг в хранилище                    
+                    Figure krug = new Circle(e.X, e.Y,30);// Добавляем круг в хранилище                    
                     storag.add_object(index, ref krug, k, ref indexin); // Снимаем выделение у всех объектов хранилища
                     remove_selection_circle(ref storag); // Вызываем функцию отрисовки круга
                     storag.objects[indexin].fillcolor = Color.Aqua;
-                    paint_Figure(Color.Black, ref storag, indexin);
+                    paint_figure(Color.Black, indexin);
                     ++index;
                 }
                 else
@@ -755,7 +856,7 @@ namespace Lab8
                         storag.add_object(index, ref kvadrat, k, ref indexin);
                         remove_selection_circle(ref storag);
                         storag.objects[indexin].fillcolor = Color.Aqua;
-                        paint_Figure(Color.Black, ref storag, indexin);
+                        paint_figure(Color.Black, indexin);
                         ++index;
                     }
                     else
@@ -766,7 +867,7 @@ namespace Lab8
                             storag.add_object(index, ref liniya, k, ref indexin);
                             remove_selection_circle(ref storag);
                             storag.objects[indexin].fillcolor = Color.Aqua;
-                            paint_Figure(Color.Black, ref storag, indexin);
+                            paint_figure(Color.Black, indexin);
                             ++index;
                         }
                     }
@@ -808,7 +909,7 @@ namespace Lab8
                     if (storag.objects[i].getColor() == Color.White)
                     {
                         storag.objects[i].setcolor(Color.Aqua);
-                        paint_Figure(Color.Black, ref storag, i);
+                        paint_figure(Color.Black, i);
                     }
                 }
             }
@@ -821,7 +922,7 @@ namespace Lab8
                     if (storag.objects[i].getColor() == Color.White)
                     {
                         storag.objects[i].setcolor(Color.Green);
-                        paint_Figure(Color.Black, ref storag, i);
+                        paint_figure(Color.Black, i);
                     }
             }
         }
@@ -834,7 +935,7 @@ namespace Lab8
                     if (storag.objects[i].getColor() == Color.White)
                     {
                         storag.objects[i].setcolor(Color.Red);
-                        paint_Figure(Color.Black, ref storag, i);
+                        paint_figure(Color.Black, i);
                     }
                 }
             }
@@ -843,7 +944,7 @@ namespace Lab8
         {   // Рисует все фигуры на панели
             for (int i = 0; i < k; ++i)
                 if (!stg.check_empty(i))
-                    paint_Figure(stg.objects[i].getColor(), ref storag, i);
+                    paint_figure(stg.objects[i].getColor(), i);
         }
         private void move_y(ref Storage stg, int y)
         {   // Функция для перемещения фигур по оси Y
@@ -854,6 +955,7 @@ namespace Lab8
                     if (stg.objects[i].getColor() == Color.White)
                     {   // Если объект выделен
                         stg.objects[i].move_y(y, paint_box);
+                        stg.NotifyObservers();
                     }
                 }
             }
@@ -867,6 +969,7 @@ namespace Lab8
                     if (stg.objects[i].getColor() == Color.White)
                     {   // Если объект выделен
                         stg.objects[i].move_x(x, paint_box);
+                        stg.NotifyObservers();
                     }
                 }
             }
@@ -981,7 +1084,7 @@ namespace Lab8
                 g = e.Node.Parent.Index;
             else
                 g = e.Node.Index;
-            paint_Figure(Color.White, ref storag, g);
+            paint_figure(Color.White, g);
         }
 
         TreeViews tree = new TreeViews();
@@ -995,6 +1098,27 @@ namespace Lab8
         public interface IObserver
         {   // Наблюдатель
             void Update(ref TreeView treeView, Storage stg);
+        }
+        private void btn_Sticky_Click(object sender, EventArgs e)
+        {
+            Sticky sticky_observ = new Sticky();
+            storag.AddObserver(sticky_observ);
+            for (int i = 0; i < k; ++i)
+            {
+                if (!storag.check_empty(i))
+                {
+                    if (storag.objects[i].is_sticky == true)
+                    {
+                        storag.objects[i].is_sticky = false;
+                        break;
+                    }
+                    if (storag.objects[i].color == Color.White)
+                    {
+                        storag.objects[i].is_sticky = true;
+                        break;
+                    }
+                }
+            }
         }
     }
 }

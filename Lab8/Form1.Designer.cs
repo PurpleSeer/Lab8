@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Узел0");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Узел0");
             this.paint_box = new System.Windows.Forms.Panel();
             this.label_x = new System.Windows.Forms.Label();
             this.label_y = new System.Windows.Forms.Label();
@@ -276,29 +276,30 @@
             // 
             this.treeView1.Location = new System.Drawing.Point(794, 12);
             this.treeView1.Name = "treeView1";
-            treeNode1.Name = "Узел0";
-            treeNode1.Text = "Узел0";
+            treeNode3.Name = "Узел0";
+            treeNode3.Text = "Узел0";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1});
-            this.treeView1.Size = new System.Drawing.Size(153, 580);
+            treeNode3});
+            this.treeView1.Size = new System.Drawing.Size(166, 580);
             this.treeView1.TabIndex = 14;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // btn_Sticky
             // 
-            this.btn_Sticky.Location = new System.Drawing.Point(794, 599);
+            this.btn_Sticky.Location = new System.Drawing.Point(794, 598);
             this.btn_Sticky.Name = "btn_Sticky";
-            this.btn_Sticky.Size = new System.Drawing.Size(153, 68);
+            this.btn_Sticky.Size = new System.Drawing.Size(166, 70);
             this.btn_Sticky.TabIndex = 15;
             this.btn_Sticky.Text = "Sticky";
             this.btn_Sticky.UseVisualStyleBackColor = true;
+            this.btn_Sticky.Click += new System.EventHandler(this.btn_Sticky_Click);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LavenderBlush;
-            this.ClientSize = new System.Drawing.Size(959, 675);
+            this.ClientSize = new System.Drawing.Size(970, 675);
             this.Controls.Add(this.btn_Sticky);
             this.Controls.Add(this.treeView1);
             this.Controls.Add(this.btn_Load);
