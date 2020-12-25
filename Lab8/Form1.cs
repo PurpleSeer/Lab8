@@ -709,6 +709,7 @@ namespace Lab8
         {
             //Проверка на наличие круга на данных координатах
             int c = check_figure(ref storag, k, e.X, e.Y);
+            storag.intit_tree(ref treeView1);
             if (index == k)
                 storag.doubleSize(ref k);
             if (c != -1)
@@ -730,6 +731,7 @@ namespace Lab8
                     // Вызываем функцию отрисовки круга                   
                     // Вызываем функцию отрисовки круга                          
                     paint_Figure(Color.White, ref storag, c);
+                    tree.treeSelect(ref treeView1, c);
                 }
                 return;
             }
@@ -979,7 +981,7 @@ namespace Lab8
                 g = e.Node.Parent.Index;
             else
                 g = e.Node.Index;
-            paint_Figure(Color.Red, ref storag, g);
+            paint_Figure(Color.White, ref storag, g);
         }
 
         TreeViews tree = new TreeViews();
